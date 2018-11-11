@@ -11,13 +11,11 @@ import com.example.service.impl.ProductServiceImpl;
 import com.example.web.rest.constant.ResourceTestConstants;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -32,8 +31,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
+@WebMvcTest
+@EnableSpringDataWebSupport
 @ActiveProfiles("test")
 public class ProductResourceTest {
 
@@ -43,18 +42,13 @@ public class ProductResourceTest {
     @MockBean
     private ProductServiceImpl productServiceImpl;
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
     public void shouldReturnNoElementsForFindAll() throws Exception {
         final Integer PAGE_NUMBER = 1;
         final Integer PAGE_SIZE = 5;
 
         Sort sort = new Sort(Direction.ASC, "id");
-        Pageable pageable = new PageRequest(PAGE_NUMBER, PAGE_SIZE, sort);
+        Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE, sort);
 
         List<ProductDto> emptyListDto = new ArrayList<>();
         Page<ProductDto> emptyPageDto = new PageImpl<>(emptyListDto, pageable, emptyListDto.size());
