@@ -16,6 +16,6 @@ public class BaseDto {
 
     @JsonIgnore
     public boolean isNew() {
-        return this.id != null;
+        return this.id == null;
     }
 }

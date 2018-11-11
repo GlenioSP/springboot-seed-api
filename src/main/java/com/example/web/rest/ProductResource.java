@@ -60,9 +60,6 @@ public class ProductResource {
     @ApiOperation(value = "Add/Create a product", response = ProductDto.class)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ProductDto> create(UriComponentsBuilder b, @Valid @RequestBody ProductDto productDto) {
-        if (!productDto.isNew()) {
-            throw new EntityConflictException(MessageConstants.ENTITY_MUST_HAVE_NULL_ID);
-        }
         ProductDto createdProduct = productService.create(productDto);
         UriComponents uriComponents = b.path("/api/products/{id}").buildAndExpand(createdProduct.getId());
         HttpHeaders headers = new HttpHeaders();
@@ -73,7 +70,7 @@ public class ProductResource {
     @ApiOperation(value = "Update a product", response = ProductDto.class)
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ProductDto> update(@PathVariable Long id, @Valid @RequestBody ProductDto productDto) {
-        return new ResponseEntity<>(productService.update(productDto), HttpStatus.OK);
+        return new ResponseEntity<>(productService.update(id, productDto), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Delete a product")

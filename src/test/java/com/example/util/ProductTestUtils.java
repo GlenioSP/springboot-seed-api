@@ -1,0 +1,40 @@
+package com.example.util;
+
+import com.example.domain.Product;
+import com.example.service.dto.ProductDto;
+import com.example.service.mapper.ProductMapper;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import org.mapstruct.factory.Mappers;
+
+public class ProductTestUtils {
+
+    private ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
+
+    public Product createProduct(Long id) {
+        Product product = new Product();
+        product.setId(id);
+        product.setProductId("1234");
+        product.setDescription("Spring Framework Shirt");
+        product.setPrice(new BigDecimal("18.95"));
+        return product;
+    }
+
+    public ProductDto createProductDto(Long id) {
+        return this.productMapper.toDto(createProduct(id));
+    }
+
+    public List<Product> createProductList() {
+        List<Product> productList = new ArrayList<>();
+        productList.add(createProduct(1L));
+        productList.add(createProduct(2L));
+        productList.add(createProduct(3L));
+        productList.add(createProduct(4L));
+        return productList;
+    }
+
+    public List<ProductDto> createProductDtoList() {
+        return this.productMapper.toDto(createProductList());
+    }
+}

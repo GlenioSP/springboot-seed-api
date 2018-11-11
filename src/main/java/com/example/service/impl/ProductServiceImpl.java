@@ -2,6 +2,7 @@ package com.example.service.impl;
 
 import com.example.constant.MessageConstants;
 import com.example.domain.Product;
+import com.example.exception.EntityConflictException;
 import com.example.exception.EntityNotFoundException;
 import com.example.repository.ProductRepository;
 import com.example.service.ProductService;
@@ -51,14 +52,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto create(ProductDto productDto) {
         logger.debug("Request to create product");
+        if (!productDto.isNew()) {
+            throw new EntityConflictException(MessageConstants.ENTITY_MUST_HAVE_NULL_ID);
+        }
         return productMapper.toDto(productRepository.save(productMapper.toEntity(productDto)));
     }
 
     @Override
-    public ProductDto update(ProductDto productDto) {
-        logger.debug("Request to update product of id {}", productDto.getId());
-        ProductDto productFound = findOne(productDto.getId());
-        return productMapper.toDto(productRepository.save(productMapper.toEntity(productFound)));
+    public ProductDto update(Long id, ProductDto productDto) {
+        logger.debug("Request to update product of id {}", id);
+        findOne(id);
+        productDto.setId(id);
+        return productMapper.toDto(productRepository.save(productMapper.toEntity(productDto)));
     }
 
     @Override
