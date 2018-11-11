@@ -1,7 +1,5 @@
 package com.example.web.rest;
 
-import com.example.constant.MessageConstants;
-import com.example.exception.EntityConflictException;
 import com.example.service.ProductService;
 import com.example.service.dto.ProductDto;
 import io.swagger.annotations.Api;

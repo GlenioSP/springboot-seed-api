@@ -23,7 +23,7 @@ public class ProductRepositoryTest {
     private ProductRepository productRepository;
 
     @Test
-    public void testSaveProduct(){
+    public void testSaveMethodToCreateAndUpdateProduct(){
         Product product = new Product();
         product.setDescription("Spring Framework Shirt");
         product.setPrice(new BigDecimal("18.95"));
@@ -40,7 +40,7 @@ public class ProductRepositoryTest {
         assertNotNull(fetchedProduct);
         assertEquals(fetchedProduct, savedProduct);
 
-        fetchedProduct.setDescription("New Description");
+        fetchedProduct.setDescription("New Spring Framework Shirt");
         productRepository.save(fetchedProduct);
 
         Product fetchedUpdatedProduct = productRepository.findById(fetchedProduct.getId()).orElse(null);

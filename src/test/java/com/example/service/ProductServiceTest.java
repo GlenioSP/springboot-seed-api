@@ -1,8 +1,6 @@
 package com.example.service;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,12 +12,21 @@ import com.example.service.dto.ProductDto;
 import com.example.service.impl.ProductServiceImpl;
 import com.example.service.mapper.ProductMapper;
 import com.example.util.ProductTestUtils;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProductServiceTest {
@@ -29,75 +36,87 @@ public class ProductServiceTest {
     @Mock
     private ProductRepository productRepository;
 
-    @Mock
-    private ProductMapper productMapper;
-
     private ProductTestUtils testUtils;
 
     @Before
     public void setup() {
+        ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
         productService = new ProductServiceImpl(productRepository, productMapper);
         testUtils = new ProductTestUtils();
     }
 
     @Test
-    public void shouldReturnProduct_whenFindOneIsCalled() {
+    public void shouldReturnAllProductsWhenFindAllIsCalled() {
+        List<Product> products = testUtils.createProductList();
+        List<ProductDto> productDtos = testUtils.createProductDtoList();
+
+        Sort sort = new Sort(Direction.ASC, "id");
+        Pageable pageable = PageRequest.of(1, 5, sort);
+
+        Page<Product> productPage = new PageImpl<>(products, pageable, products.size());
+        Page<ProductDto> productPageDto = new PageImpl<>(productDtos, pageable, productDtos.size());
+
+        when(productRepository.findAll(pageable)).thenReturn(productPage);
+
+        Page<ProductDto> retrievedProductPageDto = productService.findAll(pageable);
+
+        Iterator<ProductDto> iProductDto = productPageDto.getContent().iterator();
+        Iterator<ProductDto> iRetrievedProductDto = retrievedProductPageDto.getContent().iterator();
+
+        while(iProductDto.hasNext() && iRetrievedProductDto.hasNext()) {
+            assertThat(iProductDto.next()).isEqualToComparingFieldByField(iRetrievedProductDto.next());
+        }
+    }
+
+    @Test
+    public void shouldReturnProductWhenFindOneIsCalled() {
         Long id = 1L;
         Product product = testUtils.createProduct(id);
         ProductDto productDto = testUtils.createProductDto(id);
 
         when(productRepository.findById(id)).thenReturn(Optional.of(product));
-        when(productMapper.toDto(product)).thenReturn(productDto);
         ProductDto retrievedProduct = productService.findOne(id);
-        assertThat(retrievedProduct, is(equalTo(productDto)));
+
+        assertThat(retrievedProduct).isEqualToComparingFieldByField(productDto);
     }
 
     @Test
-    public void shouldReturnCreatedProduct_whenCreateProductIsCalled() {
+    public void shouldReturnCreatedProductWhenCreateProductIsCalled() {
         Long id = null;
         Product product = testUtils.createProduct(id);
         ProductDto productDto = testUtils.createProductDto(id);
 
-        when(productMapper.toEntity(productDto)).thenReturn(product);
         Product productWithId = testUtils.createProduct(1L);
         when(productRepository.save(product)).thenReturn(productWithId);
         ProductDto productDtoWithId = testUtils.createProductDto(1L);
-        when(productMapper.toDto(productWithId)).thenReturn(productDtoWithId);
 
         ProductDto savedProduct = productService.create(productDto);
-        assertThat(savedProduct, is(equalTo(productDtoWithId)));
+        assertThat(savedProduct).isEqualToComparingFieldByField(productDtoWithId);
     }
 
     @Test
-    public void shouldReturnUpdatedProduct_whenUpdateProductIsCalled() {
+    public void shouldReturnUpdatedProductWhenUpdateProductIsCalled() {
         Long id = 1L;
         Product product = testUtils.createProduct(id);
-        ProductDto productDto = testUtils.createProductDto(id);
 
         Product updatedProduct = testUtils.createProduct(id);
         updatedProduct.setDescription("New Spring Framework Shirt");
         ProductDto updatedProductDto = testUtils.createProductDto(id);
-        updatedProduct.setDescription("New Spring Framework Shirt");
+        updatedProductDto.setDescription("New Spring Framework Shirt");
 
         when(productRepository.findById(id)).thenReturn(Optional.of(product));
-        when(productMapper.toDto(product)).thenReturn(productDto);
-
-        when(productMapper.toEntity(updatedProductDto)).thenReturn(updatedProduct);
         when(productRepository.save(updatedProduct)).thenReturn(updatedProduct);
-        when(productMapper.toDto(updatedProduct)).thenReturn(updatedProductDto);
 
         ProductDto savedProduct = productService.update(id, updatedProductDto);
-        assertThat(savedProduct, is(equalTo(updatedProductDto)));
+        assertThat(savedProduct).isEqualToComparingFieldByField(updatedProductDto);
     }
 
     @Test
-    public void shouldCallDeleteMethodOfProductRepository_whenDeleteProductIsCalled() {
+    public void shouldCallDeleteMethodOfProductRepositoryWhenDeleteProductIsCalled() {
         Long id = 1L;
         Product product = testUtils.createProduct(id);
-        ProductDto productDto = testUtils.createProductDto(id);
 
         when(productRepository.findById(id)).thenReturn(Optional.of(product));
-        when(productMapper.toDto(product)).thenReturn(productDto);
 
         doNothing().when(productRepository).deleteById(id);
         productService.delete(id);

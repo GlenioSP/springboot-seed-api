@@ -13,7 +13,7 @@ public class ProductMapperTest {
     private ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
 
     @Test
-    public void givenEntityToDto_whenMaps_thenCorrect() {
+    public void givenEntityToDtoWhenMapsThenCorrect() {
         Product product = new Product();
         product.setProductId("1");
         product.setDescription("Product 1");
@@ -27,7 +27,7 @@ public class ProductMapperTest {
     }
 
     @Test
-    public void givenDtoToEntity_whenMaps_thenCorrect() {
+    public void givenDtoToEntityWhenMapsThenCorrect() {
         ProductDto productDto = new ProductDto();
         productDto.setProductId("1");
         productDto.setDescription("Product 1");

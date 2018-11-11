@@ -26,12 +26,12 @@ public class ProductTestUtils {
     }
 
     public List<Product> createProductList() {
-        List<Product> productList = new ArrayList<>();
-        productList.add(createProduct(1L));
-        productList.add(createProduct(2L));
-        productList.add(createProduct(3L));
-        productList.add(createProduct(4L));
-        return productList;
+        List<Product> products = new ArrayList<>();
+        products.add(createProduct(1L));
+        products.add(createProduct(2L));
+        products.add(createProduct(3L));
+        products.add(createProduct(4L));
+        return products;
     }
 
     public List<ProductDto> createProductDtoList() {
