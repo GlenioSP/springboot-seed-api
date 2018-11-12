@@ -43,20 +43,20 @@ public class ProductResource {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<ProductDto>> findAll(Pageable pageable) {
         Page<ProductDto> page = productService.findAll(pageable);
         return new ResponseEntity<>(page.getContent(), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Find a product with an ID", response = ProductDto.class)
-    @GetMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ProductDto> findOne(@PathVariable Long id) {
         return new ResponseEntity<>(productService.findOne(id), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Add/Create a product", response = ProductDto.class)
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ProductDto> create(UriComponentsBuilder b, @Valid @RequestBody ProductDto productDto) {
         ProductDto createdProduct = productService.create(productDto);
         UriComponents uriComponents = b.path("/api/products/{id}").buildAndExpand(createdProduct.getId());
@@ -66,13 +66,13 @@ public class ProductResource {
     }
 
     @ApiOperation(value = "Update a product", response = ProductDto.class)
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ProductDto> update(@PathVariable Long id, @Valid @RequestBody ProductDto productDto) {
         return new ResponseEntity<>(productService.update(id, productDto), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Delete a product")
-    @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity delete(@PathVariable Long id) {
         productService.delete(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
