@@ -3,10 +3,11 @@ package com.example.util;
 import com.example.domain.Product;
 import com.example.service.dto.ProductDto;
 import com.example.service.mapper.ProductMapper;
+import org.mapstruct.factory.Mappers;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import org.mapstruct.factory.Mappers;
 
 public class ProductTestUtils {
 

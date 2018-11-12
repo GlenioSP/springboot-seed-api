@@ -1,12 +1,13 @@
 package com.example.domain;
 
 import io.swagger.annotations.ApiModelProperty;
-import java.math.BigDecimal;
-import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity(name = "Product")
 @Table(name = "product")

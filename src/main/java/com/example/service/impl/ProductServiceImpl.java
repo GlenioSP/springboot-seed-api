@@ -8,14 +8,19 @@ import com.example.repository.ProductRepository;
 import com.example.service.ProductService;
 import com.example.service.dto.ProductDto;
 import com.example.service.mapper.ProductMapper;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+@Primary
 @Service
 @Transactional
 public class ProductServiceImpl implements ProductService {
@@ -26,7 +31,14 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductMapper productMapper;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
+    private ProductService2 productService2;
+
+    private ProductService3 productService3;
+
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper,
+                              ProductService2 productService2, ProductService3 productService3) {
+        this.productService2 = productService2;
+        this.productService3 = productService3;
         this.productRepository = productRepository;
         this.productMapper = productMapper;
     }
@@ -41,12 +53,26 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public ProductDto findOne(Long id) {
-        logger.debug("Request to find product of id {}", id);
-        Optional<Product> product = productRepository.findById(id);
-        if (!product.isPresent()) {
+        logger.info("1 - Request to find product of id {}", id);
+        Optional<Product> product1 = productRepository.findById(id);
+        if (!product1.isPresent()) {
             throw new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND + id);
         }
-        return productMapper.toDto(product.get());
+        CompletableFuture<ProductDto> product2 = productService2.findOne(id);
+        CompletableFuture<ProductDto> product3 = productService3.findOne(id);
+
+        ProductDto productDto1 = productMapper.toDto(product1.get());
+
+        CompletableFuture.allOf(product2, product3);
+
+        try {
+            if (productDto1.getId().equals(product2.get().getId()) && productDto1.getId().equals(product3.get().getId())) {
+                logger.info("1 - Threads results are equal");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return productDto1;
     }
 
     @Override
