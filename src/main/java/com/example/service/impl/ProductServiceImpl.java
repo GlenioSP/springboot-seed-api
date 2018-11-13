@@ -41,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public ProductDto findOne(Long id) {
-        logger.debug("Request to find product of id {}", id);
+        logger.debug("Request to find product with id {}", id);
         Optional<Product> product = productRepository.findById(id);
         if (!product.isPresent()) {
             throw new EntityNotFoundException(MessageConstants.ENTITY_NOT_FOUND + id);
@@ -51,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto create(ProductDto productDto) {
-        logger.debug("Request to create product");
+        logger.debug("Request to create product {}", productDto);
         if (!productDto.isNew()) {
             throw new EntityConflictException(MessageConstants.ENTITY_MUST_HAVE_NULL_ID);
         }
@@ -60,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto update(Long id, ProductDto productDto) {
-        logger.debug("Request to update product of id {}", id);
+        logger.debug("Request to update product with id {}", id);
         findOne(id);
         productDto.setId(id);
         return productMapper.toDto(productRepository.save(productMapper.toEntity(productDto)));
@@ -68,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void delete(Long id) {
-        logger.debug("Request to delete product of id {}", id);
+        logger.debug("Request to delete product with id {}", id);
         findOne(id);
         productRepository.deleteById(id);
     }
