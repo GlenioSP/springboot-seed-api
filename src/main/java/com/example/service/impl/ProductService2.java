@@ -5,7 +5,6 @@ import com.example.domain.Product;
 import com.example.exception.EntityConflictException;
 import com.example.exception.EntityNotFoundException;
 import com.example.repository.ProductRepository;
-import com.example.service.ProductService;
 import com.example.service.dto.ProductDto;
 import com.example.service.mapper.ProductMapper;
 import org.slf4j.Logger;
