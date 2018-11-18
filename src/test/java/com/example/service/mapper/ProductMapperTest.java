@@ -1,12 +1,13 @@
 package com.example.service.mapper;
 
-import static org.junit.Assert.assertEquals;
-
 import com.example.domain.Product;
 import com.example.service.dto.ProductDto;
-import java.math.BigDecimal;
 import org.junit.Test;
 import org.mapstruct.factory.Mappers;
+
+import java.math.BigDecimal;
+
+import static org.junit.Assert.assertEquals;
 
 public class ProductMapperTest {
 
